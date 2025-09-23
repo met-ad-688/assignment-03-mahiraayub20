@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Mahira Ayub">
-<meta name="dcterms.date" content="2025-09-21">
+<meta name="dcterms.date" content="2025-09-23">
 
 <title>Assignment 03</title>
 <style>
@@ -22,10 +22,45 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="assignment03-mayub_files/libs/clipboard/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="assignment03-mayub_files/libs/clipboard/clipboard.min.js"></script>
 <script src="assignment03-mayub_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="assignment03-mayub_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="assignment03-mayub_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -37,6 +72,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="assignment03-mayub_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="assignment03-mayub_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="assignment03-mayub_files/libs/bootstrap/bootstrap-591810064b9a63b13c87081b5e0fabb3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -49,13 +87,15 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#load-the-raw-dataset" id="toc-load-the-raw-dataset" class="nav-link active" data-scroll-target="#load-the-raw-dataset"><span class="header-section-number">1</span> Load the Raw Dataset**:</a></li>
-  <li><a href="#initialize-spark-session" id="toc-initialize-spark-session" class="nav-link" data-scroll-target="#initialize-spark-session"><span class="header-section-number">2</span> Initialize Spark Session</a></li>
-  <li><a href="#load-data" id="toc-load-data" class="nav-link" data-scroll-target="#load-data"><span class="header-section-number">3</span> Load Data</a></li>
-  <li><a href="#show-schema-and-sample-data" id="toc-show-schema-and-sample-data" class="nav-link" data-scroll-target="#show-schema-and-sample-data"><span class="header-section-number">4</span> Show Schema and Sample Data</a></li>
-  <li><a href="#printthis-is-diagnostic-check-no-need-to-print-it-in-the-final-doc" id="toc-printthis-is-diagnostic-check-no-need-to-print-it-in-the-final-doc" class="nav-link" data-scroll-target="#printthis-is-diagnostic-check-no-need-to-print-it-in-the-final-doc"><span class="header-section-number">5</span> print(“–This is Diagnostic check, No need to print it in the final doc—”)</a></li>
-  <li><a href="#df.printschema-comment-this-line-when-rendering-the-submission" id="toc-df.printschema-comment-this-line-when-rendering-the-submission" class="nav-link" data-scroll-target="#df.printschema-comment-this-line-when-rendering-the-submission"><span class="header-section-number">6</span> df.printSchema() # comment this line when rendering the submission</a></li>
-  <li><a href="#df.show5" id="toc-df.show5" class="nav-link" data-scroll-target="#df.show5"><span class="header-section-number">7</span> df.show(5)</a></li>
+  <li><a href="#load-the-dataset" id="toc-load-the-dataset" class="nav-link active" data-scroll-target="#load-the-dataset"><span class="header-section-number">0.1</span> Load the Dataset</a></li>
+  <li><a href="#load-the-raw-dataset" id="toc-load-the-raw-dataset" class="nav-link" data-scroll-target="#load-the-raw-dataset"><span class="header-section-number">1</span> Load the Raw Dataset**:</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation"><span class="header-section-number">2</span> Data Preparation</a>
+  <ul class="collapse">
+  <li><a href="#salary-distribution-by-industry-and-employment-type" id="toc-salary-distribution-by-industry-and-employment-type" class="nav-link" data-scroll-target="#salary-distribution-by-industry-and-employment-type"><span class="header-section-number">2.1</span> Salary Distribution by Industry and Employment Type</a></li>
+  </ul></li>
+  <li><a href="#step-1-filter-dataset-remove-missing-or-zero-salaries" id="toc-step-1-filter-dataset-remove-missing-or-zero-salaries" class="nav-link" data-scroll-target="#step-1-filter-dataset-remove-missing-or-zero-salaries"><span class="header-section-number">3</span> Step 1: Filter dataset (remove missing or zero salaries)</a></li>
+  <li><a href="#step-2-create-boxplot-grouped-by-industry-and-employment-type" id="toc-step-2-create-boxplot-grouped-by-industry-and-employment-type" class="nav-link" data-scroll-target="#step-2-create-boxplot-grouped-by-industry-and-employment-type"><span class="header-section-number">4</span> Step 2: Create boxplot grouped by industry and employment type</a></li>
+  <li><a href="#customize-styles" id="toc-customize-styles" class="nav-link" data-scroll-target="#customize-styles"><span class="header-section-number">5</span> Customize styles</a></li>
   </ul>
 </nav>
 </div>
@@ -87,14 +127,14 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 21, 2025</p>
+      <p class="date">September 23, 2025</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">September 21, 2025</p>
+      <p class="date-modified">September 23, 2025</p>
     </div>
   </div>
     
@@ -105,6 +145,10 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="load-the-dataset" class="level2" data-number="0.1">
+<h2 data-number="0.1" class="anchored" data-anchor-id="load-the-dataset"><span class="header-section-number">0.1</span> Load the Dataset</h2>
+<p>The instruction below provides you with general keywords for columns used in the lightcast file. See the data schema generated after the load dataset code above to use proper column name. For each visualization, customize colors, fonts, and styles to avoid a 2.5-point deduction. Also, provide a two-sentence explanation describing key insights drawn from the graph.</p>
+</section>
 <section id="load-the-raw-dataset" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Load the Raw Dataset**:</h1>
 <ul>
@@ -112,31 +156,134 @@ ul.task-list li input[type="checkbox"] {
 <li>You can reuse the previous code.</li>
 <li>[Copying code from your friend constitutes plagiarism. DO NOT DO THIS! - bloodred-bold].</li>
 </ul>
-<p>#| eval: true #| echo: true #| fig-align: center</p>
-<p>from pyspark.sql import SparkSession import pandas as pd import plotly.express as pxp import plotly.io as pio import numpy as np</p>
-<p>np.random.seed(42)</p>
-<p>pio.renderers.default = “notebook”</p>
+<div id="f14f4c59" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.io <span class="im">as</span> pio</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pio.renderers.default <span class="op">=</span> <span class="st">"svg"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql <span class="im">import</span> SparkSession</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql.functions <span class="im">import</span> col, split, explode, regexp_replace, transform, when</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql <span class="im">import</span> functions <span class="im">as</span> F</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql.functions <span class="im">import</span> col, monotonically_increasing_id</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>pio.renderers.default <span class="op">=</span> <span class="st">"notebook"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize Spark Session</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>spark <span class="op">=</span> SparkSession.builder.appName(<span class="st">"LightcastData"</span>).getOrCreate()</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Data</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> spark.read.option(<span class="st">"header"</span>, <span class="st">"true"</span>).option(<span class="st">"inferSchema"</span>, <span class="st">"true"</span>).option(<span class="st">"multiLine"</span>,<span class="st">"true"</span>).option(<span class="st">"escape"</span>, <span class="st">"</span><span class="ch">\"</span><span class="st">"</span>).csv(<span class="st">"./data/lightcast_job_postings.csv"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Show Schema and Sample Data</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># print("--This is Diagnostic check, No need to print it in the final doc---")</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># df.printSchema()   # comment this line when rendering the submission</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># df.show(5)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[Stage 25:&gt;                                                         (0 + 1) / 1]                                                                                </code></pre>
+</div>
+</div>
+<div id="186ef6af" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-stderr">
+<pre><code>[Stage 26:&gt;                                                         (0 + 1) / 1]                                                                                </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>+--------+--------------------+--------------------+-------------------+----------+
+| company|        company_name|         company_raw|company_is_staffing|company_id|
++--------+--------------------+--------------------+-------------------+----------+
+|35247729|               Crowe|               Crowe|              false|         0|
+|39461288|The Devereux Foun...|The Devereux Foun...|              false|         1|
+|40008275|      Elder Research|      Elder Research|              false|         2|
+|37060425|            NTT DATA|        NTT DATA Inc|              false|         3|
+|40882284|Frederick Nationa...|Frederick Nationa...|              false|         4|
++--------+--------------------+--------------------+-------------------+----------+
+only showing top 5 rows
+</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[Stage 29:&gt;                                                         (0 + 1) / 1]                                                                                </code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">company_name</th>
+<th data-quarto-table-cell-role="th">company_raw</th>
+<th data-quarto-table-cell-role="th">is_staffing</th>
+<th data-quarto-table-cell-role="th">company_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Crowe</td>
+<td>Crowe</td>
+<td>False</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>The Devereux Foundation</td>
+<td>The Devereux Foundation</td>
+<td>False</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Elder Research</td>
+<td>Elder Research</td>
+<td>False</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>NTT DATA</td>
+<td>NTT DATA Inc</td>
+<td>False</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Frederick National Laboratory For Cancer Research</td>
+<td>Frederick National Laboratory for Cancer Research</td>
+<td>False</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </section>
-<section id="initialize-spark-session" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Initialize Spark Session</h1>
-<p>spark = SparkSession.builder.appName(“LightcastDA”).getOrCreate()</p>
+<section id="data-preparation" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Data Preparation</h1>
+<section id="salary-distribution-by-industry-and-employment-type" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="salary-distribution-by-industry-and-employment-type"><span class="header-section-number">2.1</span> Salary Distribution by Industry and Employment Type</h2>
+<p>Compare salary variations across industries.</p>
+<p><strong>Filter the dataset</strong> - Remove records where <strong>“salary is missing or zero”</strong>. <strong>Aggregate Data</strong> - Group by <strong>NAICS industry codes</strong>. - Group by <strong>employment type</strong> and compute salary distribution. - Calculate <strong>salary percentiles</strong> (25th, 50th, 75th) for each group. <strong>Visualize results</strong> - Create a <strong>box plot</strong> where: - <strong>x-axis</strong>: <code>NAICS2_NAME</code> - <strong>y-axis</strong>: <code>SALARY_FROM</code>, or <code>SALARY_TO</code>, or <code>SALARY</code> - Group by <code>EMPLOYMENT_TYPE_NAME</code>. - Customize colors, fonts, and styles. - <strong>Explanation</strong>: Write two sentences about what the graph reveals.</p>
 </section>
-<section id="load-data" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Load Data</h1>
-<p>df = spark.read.option(“header”, “true”).option(“inferSchema”, “true”).option(“multiLine”,“true”).option(“escape”, “"”).csv(“../data/lightcast_job_postings.csv”)</p>
 </section>
-<section id="show-schema-and-sample-data" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Show Schema and Sample Data</h1>
+<section id="step-1-filter-dataset-remove-missing-or-zero-salaries" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Step 1: Filter dataset (remove missing or zero salaries)</h1>
+<p>df = df[df[“SALARY_FROM”].notnull()] df = df[df[“SALARY_FROM”] &gt; 0]</p>
 </section>
-<section id="printthis-is-diagnostic-check-no-need-to-print-it-in-the-final-doc" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> print(“–This is Diagnostic check, No need to print it in the final doc—”)</h1>
+<section id="step-2-create-boxplot-grouped-by-industry-and-employment-type" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Step 2: Create boxplot grouped by industry and employment type</h1>
+<p>plt.figure(figsize=(15,8)) sns.boxplot( data=df, x=“NAICS2_NAME”, y=“SALARY_FROM”, hue=“EMPLOYMENT_TYPE_NAME”, showfliers=True, # show outliers palette=“Set2” # color scheme )</p>
 </section>
-<section id="df.printschema-comment-this-line-when-rendering-the-submission" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> df.printSchema() # comment this line when rendering the submission</h1>
-</section>
-<section id="df.show5" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> df.show(5)</h1>
-<p>The instruction below provides you with general keywords for columns used in the lightcast file. See the data schema generated after the load dataset code above to use proper column name. For each visualization, customize colors, fonts, and styles to avoid a 2.5-point deduction. Also, provide a two-sentence explanation describing key insights drawn from the graph.</p>
+<section id="customize-styles" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Customize styles</h1>
+<p>plt.xticks(rotation=60, ha=“right”) plt.title(“Salary Distribution by Industry and Employment Type”, fontsize=14, weight=“bold”) plt.xlabel(“Industry (NAICS2)”, fontsize=12) plt.ylabel(“Salary (From)”, fontsize=12) plt.legend(title=“Employment Type”) plt.tight_layout() plt.show()</p>
 </section>
 
 </main>

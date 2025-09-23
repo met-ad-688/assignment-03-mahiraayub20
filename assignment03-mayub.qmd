@@ -65,6 +65,27 @@ df = spark.read.option("header", "true").option("inferSchema", "true").option("m
 # df.show(5)
 ```
 
+```{python}
+#| eval: true
+
+# Step 1: Create Companies Table (Primary Key: company_id)
+companies_df = df.select(
+    col("company"),
+    col("company_name"),
+    col("company_raw"),
+    col("company_is_staffing")
+).distinct().withColumn("company_id", monotonically_increasing_id())
+
+companies_df.show(5)
+
+companies = companies_df.toPandas()
+companies.drop(columns=["company"], inplace=True)
+companies.rename(columns={"company_is_staffing": "is_staffing"}, inplace=True)
+companies.to_csv("./output/companies.csv", index=False)
+
+companies.head()
+```
+
 # Data Preparation
 
 ```{python}
@@ -100,7 +121,7 @@ export_cols = [
     "REMOTE_TYPE_NAME",
     "MAX_YEARS_EXPERIENCE",
     "Average_Salary",
-    "L0T_V6_SPECIALIZED_OCCUPATION_NAME"
+    "LOT_V6_SPECIALIZED_OCCUPATION_NAME"
 ]
 
 df_selected = df.select(*export_cols)
@@ -111,6 +132,60 @@ pdf.to_csv("./data/lightcast_cleaned.csv", index=False)
 
 print("Data cleansing complete. Rows retained:", len(pdf))
 ```
+
+
+```{python}
+# Step 1: Casting salary and experience columns
+df = df.withColumn("SALARY", col("SALARY").cast("float")) \
+       .withColumn("SALARY_FROM", col("SALARY_FROM").cast("float")) \
+       .withColumn("SALARY_TO", col("SALARY_TO").cast("float")) \
+       .withColumn("MIN_YEARS_EXPERIENCE", col("MIN_YEARS_EXPERIENCE").cast("float")) \
+       .withColumn("MAX_YEARS_EXPERIENCE", col("MAX_YEARS_EXPERIENCE").cast("float"))
+
+# Step 2: Computing medians for salary columns
+def compute_median(sdf, col_name):
+    q = sdf.approxQuantile(col_name, [0.5], 0.01)
+    return q[0] if q else None
+
+median_from = compute_median(df, "SALARY_FROM")
+median_to = compute_median(df, "SALARY_TO")
+median_salary = compute_median(df, "SALARY")
+
+print("Medians:", median_from, median_to, median_salary)
+
+# Step 3: Imputing missing salaries, but not experience
+df = df.fillna({
+    "SALARY_FROM": median_from,
+    "SALARY_TO": median_to,
+    "SALARY": median_salary
+})
+
+# Step 5: Computing average salary
+df = df.withColumn("Average_Salary", (col("SALARY_FROM") + col("SALARY_TO")) / 2)
+
+# Step 6: Selecting required columns
+export_cols = [
+    "EDUCATION_LEVELS_NAME",
+    "REMOTE_TYPE_NAME",
+    "MAX_YEARS_EXPERIENCE",
+    "Average_Salary",
+    "SALARY",
+    "LOT_V6_SPECIALIZED_OCCUPATION_NAME"
+]
+
+df_selected = df.select(*export_cols)
+
+# Step 7: Saving to CSV
+pdf = df_selected.toPandas()
+pdf.to_csv("./data/lightcast_cleaned.csv", index=False)
+
+print("Data cleansing complete. Rows retained:", len(pdf))
+```
+
+
+
+
+
 
 
 ## Salary Distribution by Industry and Employment Type
@@ -129,3 +204,31 @@ Compare salary variations across industries.
   - Group by `EMPLOYMENT_TYPE_NAME`.
 - Customize colors, fonts, and styles.
 - **Explanation**: Write two sentences about what the graph reveals.
+
+```{python}
+
+
+# Step 1: Filter dataset (remove missing or zero salaries)
+df = df[df["SALARY_FROM"].notnull()]
+df = df[df["SALARY_FROM"] > 0]
+
+# Step 2: Create boxplot grouped by industry and employment type
+plt.figure(figsize=(15,8))
+sns.boxplot(
+    data=df,
+    x="NAICS2_NAME",
+    y="SALARY_FROM",
+    hue="EMPLOYMENT_TYPE_NAME",
+    showfliers=True,   # show outliers
+    palette="Set2"     # color scheme
+)
+
+# Customize styles
+plt.xticks(rotation=60, ha="right")
+plt.title("Salary Distribution by Industry and Employment Type", fontsize=14, weight="bold")
+plt.xlabel("Industry (NAICS2)", fontsize=12)
+plt.ylabel("Salary (From)", fontsize=12)
+plt.legend(title="Employment Type")
+plt.tight_layout()
+plt.show()
+
